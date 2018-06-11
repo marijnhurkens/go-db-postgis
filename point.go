@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"strconv"
 )
 
 // Point represents a Postgis POINT
@@ -64,6 +65,15 @@ func (p Point) Value() (driver.Value, error) {
 	return p.String(), nil
 }
 
+// MarshalJSON implements the JSON marshaller for the nullstring
+func (p Point) MarshalJSON() ([]byte, error) {
+
+	bytes := bytes.NewBufferString("{\"lat\":" + strconv.FormatFloat(p.Lat, 'f', -1, 64) + ",\"lng\":" + strconv.FormatFloat(p.Lng, 'f', -1, 64) + "}")
+
+	return bytes.Bytes(), nil
+
+}
+
 // NullPoint is used to create a nullable point
 type NullPoint struct {
 	Point Point
@@ -102,4 +112,17 @@ func (np NullPoint) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	return np.Point, nil
+}
+
+// MarshalJSON implements the JSON marshaller for the nullstring
+func (np NullPoint) MarshalJSON() ([]byte, error) {
+	if np.Valid {
+		bytes := bytes.NewBufferString("{\"lat\":" + strconv.FormatFloat(np.Point.Lat, 'f', -1, 64) + ",\"lng\":" + strconv.FormatFloat(np.Point.Lng, 'f', -1, 64) + "}")
+
+		return bytes.Bytes(), nil
+	}
+
+	bytes := bytes.NewBufferString("null")
+
+	return bytes.Bytes(), nil
 }
