@@ -5,6 +5,7 @@ import (
 	"database/sql/driver"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"strconv"
 )
@@ -114,7 +115,7 @@ func (np NullPoint) Value() (driver.Value, error) {
 	return np.Point.Value()
 }
 
-// MarshalJSON implements the JSON marshaller for the nullstring
+// MarshalJSON implements the JSON marshaller for the nullpoint
 func (np NullPoint) MarshalJSON() ([]byte, error) {
 	if np.Valid {
 		bytes := bytes.NewBufferString("{\"lat\":" + strconv.FormatFloat(np.Point.Lat, 'f', -1, 64) + ",\"lng\":" + strconv.FormatFloat(np.Point.Lng, 'f', -1, 64) + "}")
@@ -125,4 +126,11 @@ func (np NullPoint) MarshalJSON() ([]byte, error) {
 	bytes := bytes.NewBufferString("null")
 
 	return bytes.Bytes(), nil
+}
+
+// UnmarshalJSON implements the JSON unmarshaller for the nullpoint
+func (np *NullPoint) UnmarshalJSON(b []byte) error {
+	err := json.Unmarshal(b, &np.Point)
+	np.Valid = (err == nil)
+	return err
 }
