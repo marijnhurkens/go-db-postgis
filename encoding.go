@@ -17,6 +17,7 @@ func Decode(points string, precision int) []Point {
 
 	// Infinite loop
 	for {
+
 		dlat, _ := decodeInt(input)
 		dlng, err := decodeInt(input)
 		if err == io.EOF {
@@ -34,6 +35,7 @@ func Decode(points string, precision int) []Point {
 	}
 }
 
+// Encode encodes the point array
 func Encode(path []Point, precision int) string {
 	var prevLat, prevLng int64
 

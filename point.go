@@ -11,12 +11,15 @@ import (
 )
 
 // Point represents a Postgis POINT
+// Order matters here as the lng (x axis) comes before the lat (y axis)
+// when scanning the point.
 type Point struct {
-	Lat float64 `json:"lat"`
 	Lng float64 `json:"lng"`
+	Lat float64 `json:"lat"`
 }
 
 // String casts to string
+// Lng before lat (x and y)
 func (p *Point) String() string {
 	return fmt.Sprintf("SRID=4326;POINT(%v %v)", p.Lng, p.Lat)
 }
